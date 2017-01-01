@@ -314,6 +314,8 @@ public class MainActivity extends AppCompatActivity {
                                                     if(manager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).isConnected()){
                                                         System.out.println("Wi-Fi");
                                                         strUrlServer = "http://172.31.16.5/FileServer/index.php";
+                                                        if(url.getText().equals(R.string.nbtc))
+                                                            url.setText(R.string.nbtc_local);
                                                     }
 
                                                     //// TODO: 9/18/2016 end server url
