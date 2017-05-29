@@ -91,6 +91,7 @@ public class MainActivity extends AppCompatActivity {
     private FileOutputStream outputStream;
     private String filename;
     private String thingspeakKey = "";
+    private boolean Send2Server;
 
     private int LTEsignalStrength;
 
@@ -108,6 +109,11 @@ public class MainActivity extends AppCompatActivity {
         button = (Button)findViewById(R.id.button);
         serverStatus = (TextView)findViewById(R.id.serverst);
         activity = this;
+
+        //// TODO: 1/6/2017 Send to server enable
+        Send2Server = true;
+        if(Send2Server)serverStatus.setText("ON"); serverStatus.setTextColor(Color.GREEN);
+        //// TODO: 1/6/2017 end Send to server enable
 
         //// TODO: 9/18/2016 start initial rss
         myPhoneStateListener psListener = new myPhoneStateListener();
@@ -174,7 +180,7 @@ public class MainActivity extends AppCompatActivity {
                                         max = round(data[2], 2);
                                         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
                                         if(connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).isConnected()) {
-                                            WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+                                            WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
                                             cid = "";
                                             rss = Double.parseDouble(wifiManager.getConnectionInfo().getRssi() + "");
                                             networkType = "Wi-Fi";
@@ -307,15 +313,28 @@ public class MainActivity extends AppCompatActivity {
                                                 public void run() {
 
                                                     //// TODO: 9/18/2016 server url
-//                                                    String strUrlServer = "http://172.31.16.5/FileServer/index.php";
-                                                    String strUrlServer = "http://202.29.148.77/FileServer/index.php";
+                                                    String strUrlServer = "http://172.31.16.5/FileServer/index.php";
+//                                                    String strUrlServer = "http://202.29.148.77/FileServer/index.php";
 //                                                    String strUrlServer = "http://192.168.1.16/FileServer/index.php";
                                                     ConnectivityManager manager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
                                                     if(manager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).isConnected()){
                                                         System.out.println("Wi-Fi");
                                                         strUrlServer = "http://172.31.16.5/FileServer/index.php";
                                                         if(url.getText().equals(R.string.nbtc))
-                                                            url.setText(R.string.nbtc_local);
+                                                            try {
+                                                                mHandler.post(new Runnable() {
+
+                                                                    @Override
+                                                                    public void run() {
+                                                                        // TODO Auto-generated method stub
+                                                                        // Write your code here to update the UI.
+                                                                        url.setText(R.string.nbtc_local);
+                                                                    }
+                                                                });
+                                                            } catch (Exception e) {
+                                                                e.printStackTrace();
+                                                            }
+//                                                            url.setText(R.string.nbtc_local);
                                                     }
 
                                                     //// TODO: 9/18/2016 end server url
@@ -330,9 +349,9 @@ public class MainActivity extends AppCompatActivity {
                                                     String strSDPath = getBaseContext().getFilesDir().getPath() + "/" + filname;
 
                                                     //// TODO Upload file to server
-
-                                                    String resServer = uploadFiletoServer(strSDPath, strUrlServer); serverStatus.setText("ON"); serverStatus.setTextColor(Color.GREEN);
-
+                                                    if(Send2Server) {
+                                                        String resServer = uploadFiletoServer(strSDPath, strUrlServer);
+                                                    }
                                                     //// TODO Finished upload file to server
 
                                                     String strStatusID = "0";
@@ -397,7 +416,7 @@ public class MainActivity extends AppCompatActivity {
                                                 public void run() {
                                                     // TODO Auto-generated method stub
                                                     // Write your code here to update the UI.
-                                                    error.setText("");
+//                                                    error.setText("");
                                                 }
                                             });
                                         } catch (Exception e) {

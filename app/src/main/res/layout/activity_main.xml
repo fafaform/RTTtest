@@ -42,13 +42,13 @@
     </ScrollView>
 
     <EditText
+        android:id="@+id/url"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/url"
-        android:text="@string/googleIP"
-        android:inputType="text"
+        android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true"/>
+        android:inputType="text"
+        android:text="@string/nbtc_local"/>
 
     <TextView
         android:text="Server Status:  "
