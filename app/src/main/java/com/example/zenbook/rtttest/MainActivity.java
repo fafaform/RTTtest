@@ -81,9 +81,9 @@ public class MainActivity extends AppCompatActivity {
     private Double min;
     private Double avg;
     private Double max;
-    private Double rss;
+//    private Double rss;
     private String networkType;
-    private String cid;
+//    private String cid;
     private int battery;
     public static Activity activity;
     private Button button;
@@ -94,6 +94,9 @@ public class MainActivity extends AppCompatActivity {
     private boolean Send2Server;
 
     private int LTEsignalStrength;
+    
+    private File file;
+    private FileOutputStream fileoutputStream;
 
     Handler mHandler = new Handler();
 
@@ -102,6 +105,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        createFile();
+        
         linearLayout = (LinearLayout) findViewById(R.id.listLayout);
 
         url = (EditText)findViewById(R.id.url);
@@ -181,59 +186,59 @@ public class MainActivity extends AppCompatActivity {
                                         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
                                         if(connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).isConnected()) {
                                             WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-                                            cid = "";
-                                            rss = Double.parseDouble(wifiManager.getConnectionInfo().getRssi() + "");
+//                                            cid = "";
+//                                            rss = Double.parseDouble(wifiManager.getConnectionInfo().getRssi() + "");
                                             networkType = "Wi-Fi";
                                         } else if (connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).isConnected()) {
 
                                             // TODO: 9/18/2016 For API 17+
-                                            TelephonyManager telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-//                                            System.out.println("DataNetworkType: "+telephonyManager.getNetworkType()+"\n"+"Network_Type_LTE: "
-//                                                    +telephonyManager.NETWORK_TYPE_LTE+"\n"+"Network_Type_WCDMA: "+telephonyManager.NETWORK_TYPE_UMTS);
-                                            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
-                                                if(telephonyManager.getNetworkType() == telephonyManager.NETWORK_TYPE_LTE){
-                                                    System.out.println("LTE");
-                                                    CellInfoLte cellinfogsm = (CellInfoLte) telephonyManager.getAllCellInfo().get(0);
-                                                    CellSignalStrengthLte cellSignalStrengthLte = cellinfogsm.getCellSignalStrength();
-                                                    CellIdentityLte cellIdentityLte = cellinfogsm.getCellIdentity();
-                                                    cid = cellIdentityLte.getCi()+"";
-                                                    rss = Double.parseDouble(cellSignalStrengthLte.getDbm() + "");
-                                                    networkType = "LTE";
-                                                }else if(telephonyManager.getNetworkType() == telephonyManager.NETWORK_TYPE_UMTS){
-                                                    System.out.println("UMTS");
-                                                    CellInfoWcdma cellinfogsm = (CellInfoWcdma) telephonyManager.getAllCellInfo().get(0);
-                                                    CellSignalStrengthWcdma cellSignalStrengthLte = cellinfogsm.getCellSignalStrength();
-                                                    CellIdentityWcdma cellIdentityLte = cellinfogsm.getCellIdentity();
-                                                    cid = cellIdentityLte.getCid()+"";
-                                                    rss = Double.parseDouble(cellSignalStrengthLte.getDbm() + "");
-                                                    networkType = "UMTS";
-                                                }else if(telephonyManager.getNetworkType() == telephonyManager.NETWORK_TYPE_CDMA){
-                                                    System.out.println("CDMA");
-                                                    CellInfoCdma cellinfogsm = (CellInfoCdma) telephonyManager.getAllCellInfo().get(0);
-                                                    CellSignalStrengthCdma cellSignalStrengthLte = cellinfogsm.getCellSignalStrength();
-                                                    CellIdentityCdma cellIdentityLte = cellinfogsm.getCellIdentity();
-                                                    cid = cellIdentityLte.getBasestationId()+"";
-                                                    rss = Double.parseDouble(cellSignalStrengthLte.getDbm() + "");
-                                                    networkType = "CDMA";
-                                                }else if(telephonyManager.getNetworkType() == telephonyManager.NETWORK_TYPE_EDGE){
-                                                    System.out.println("EDGE");
-                                                    CellInfoGsm cellinfogsm = (CellInfoGsm) telephonyManager.getAllCellInfo().get(0);
-                                                    CellSignalStrengthGsm cellSignalStrengthLte = cellinfogsm.getCellSignalStrength();
-                                                    CellIdentityGsm cellIdentityLte = cellinfogsm.getCellIdentity();
-                                                    cid = cellIdentityLte.getCid()+"";
-                                                    rss = Double.parseDouble(cellSignalStrengthLte.getDbm() + "");
-                                                    networkType = "EDGE";
-                                                }else{
-                                                    System.out.println("UNKNOWN");
-                                                    CellInfoGsm cellinfogsm = (CellInfoGsm) telephonyManager.getAllCellInfo().get(0);
-                                                    CellSignalStrengthGsm cellSignalStrengthLte = cellinfogsm.getCellSignalStrength();
-                                                    CellIdentityGsm cellIdentityLte = cellinfogsm.getCellIdentity();
-                                                    cid = cellIdentityLte.getCid()+"";
-                                                    rss = Double.parseDouble(cellSignalStrengthLte.getDbm() + "");
-                                                    networkType = "UNKNOWN";
-                                                }
+//                                            TelephonyManager telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+////                                            System.out.println("DataNetworkType: "+telephonyManager.getNetworkType()+"\n"+"Network_Type_LTE: "
+////                                                    +telephonyManager.NETWORK_TYPE_LTE+"\n"+"Network_Type_WCDMA: "+telephonyManager.NETWORK_TYPE_UMTS);
+//                                            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
+//                                                if(telephonyManager.getNetworkType() == telephonyManager.NETWORK_TYPE_LTE){
+//                                                    System.out.println("LTE");
+//                                                    CellInfoLte cellinfogsm = (CellInfoLte) telephonyManager.getAllCellInfo().get(0);
+//                                                    CellSignalStrengthLte cellSignalStrengthLte = cellinfogsm.getCellSignalStrength();
+//                                                    CellIdentityLte cellIdentityLte = cellinfogsm.getCellIdentity();
+//                                                    cid = cellIdentityLte.getCi()+"";
+//                                                    rss = Double.parseDouble(cellSignalStrengthLte.getDbm() + "");
+//                                                    networkType = "LTE";
+//                                                }else if(telephonyManager.getNetworkType() == telephonyManager.NETWORK_TYPE_UMTS){
+//                                                    System.out.println("UMTS");
+//                                                    CellInfoWcdma cellinfogsm = (CellInfoWcdma) telephonyManager.getAllCellInfo().get(0);
+//                                                    CellSignalStrengthWcdma cellSignalStrengthLte = cellinfogsm.getCellSignalStrength();
+//                                                    CellIdentityWcdma cellIdentityLte = cellinfogsm.getCellIdentity();
+//                                                    cid = cellIdentityLte.getCid()+"";
+//                                                    rss = Double.parseDouble(cellSignalStrengthLte.getDbm() + "");
+//                                                    networkType = "UMTS";
+//                                                }else if(telephonyManager.getNetworkType() == telephonyManager.NETWORK_TYPE_CDMA){
+//                                                    System.out.println("CDMA");
+//                                                    CellInfoCdma cellinfogsm = (CellInfoCdma) telephonyManager.getAllCellInfo().get(0);
+//                                                    CellSignalStrengthCdma cellSignalStrengthLte = cellinfogsm.getCellSignalStrength();
+//                                                    CellIdentityCdma cellIdentityLte = cellinfogsm.getCellIdentity();
+//                                                    cid = cellIdentityLte.getBasestationId()+"";
+//                                                    rss = Double.parseDouble(cellSignalStrengthLte.getDbm() + "");
+//                                                    networkType = "CDMA";
+//                                                }else if(telephonyManager.getNetworkType() == telephonyManager.NETWORK_TYPE_EDGE){
+//                                                    System.out.println("EDGE");
+//                                                    CellInfoGsm cellinfogsm = (CellInfoGsm) telephonyManager.getAllCellInfo().get(0);
+//                                                    CellSignalStrengthGsm cellSignalStrengthLte = cellinfogsm.getCellSignalStrength();
+//                                                    CellIdentityGsm cellIdentityLte = cellinfogsm.getCellIdentity();
+//                                                    cid = cellIdentityLte.getCid()+"";
+//                                                    rss = Double.parseDouble(cellSignalStrengthLte.getDbm() + "");
+//                                                    networkType = "EDGE";
+//                                                }else{
+//                                                    System.out.println("UNKNOWN");
+//                                                    CellInfoGsm cellinfogsm = (CellInfoGsm) telephonyManager.getAllCellInfo().get(0);
+//                                                    CellSignalStrengthGsm cellSignalStrengthLte = cellinfogsm.getCellSignalStrength();
+//                                                    CellIdentityGsm cellIdentityLte = cellinfogsm.getCellIdentity();
+//                                                    cid = cellIdentityLte.getCid()+"";
+//                                                    rss = Double.parseDouble(cellSignalStrengthLte.getDbm() + "");
+//                                                    networkType = "UNKNOWN";
+//                                                }
 
-                                            }
+//                                            }
                                             //// TODO: 9/18/2016 End for API 17+
                                             //// TODO: 10/5/2016 for API 17-
 //                                rss = Double.parseDouble(LTEsignalStrength+"");
@@ -251,29 +256,37 @@ public class MainActivity extends AppCompatActivity {
 
                                         DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
                                         Date date = new Date();
-                                        System.out.println("DateTime: " + dateFormat.format(date) + ", Min: " + min + ", AVG: " + avg + ", Max: " + max + ", rss: " + rss + ", technique: " + networkType + ", cid: " + cid + ", battery: " + battery);
+                                        System.out.println("DateTime: " + dateFormat.format(date) + ", Min: " + min + ", AVG: " + avg + ", Max: " + max  + ", technique: " + networkType + ", battery: " + battery);
+//                                        System.out.println("DateTime: " + dateFormat.format(date) + ", Min: " + min + ", AVG: " + avg + ", Max: " + max + ", rss: " + rss + ", technique: " + networkType + ", cid: " + cid + ", battery: " + battery);
                                         try {
-                                            String string = dateFormat.format(date) + "," + min + "," + avg + "," + max + "," + rss + "," + networkType + "," + cid + "," + battery +"\n";
+                                            String string = dateFormat.format(date) + "," + min + "," + avg + "," + max + "," + networkType + "," + battery +"\n";
+//                                            String string = dateFormat.format(date) + "," + min + "," + avg + "," + max + "," + rss + "," + networkType + "," + cid + "," + battery +"\n";
                                             outputStream.write(string.getBytes());
+    
+                                            fileoutputStream = new FileOutputStream(file, true);
+                                            fileoutputStream.write((dateFormat.format(date) + "," + min + "," + avg + "," + max + "," + networkType + "," + battery).getBytes());
+//                                            fileoutputStream.write((dateFormat.format(date) + "," + min + "," + avg + "," + max + "," + rss + "," + networkType + "," + cid + "," + battery).getBytes());
+                                            fileoutputStream.write("\n".getBytes());
+                                            fileoutputStream.close();
 
                                             //// TODO: 9/18/2016 sending to thingspeak
 
-                                            ConnectivityManager manager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
-                                            if(manager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).isConnected()){
-                                                thingspeakKey = "1CC7UK5QBF1MAN40";
-                                                System.out.println("Wi-Fi");
-                                            }else if(manager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).isConnected()){
-                                                TelephonyManager telephonyManager = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
-                                                String carrierName = telephonyManager.getNetworkOperatorName();
-                                                System.out.println(carrierName);
-                                                if(carrierName.equals("AIS")){
-                                                    thingspeakKey = "13TDUBSYN2YOWH8T";
-                                                }else if(carrierName.equals("dtac")){
-                                                    thingspeakKey = "NB52MGLUQW2AZ33Q";
-                                                }else if(carrierName.equals("TRUE 3G+")){
-                                                    thingspeakKey = "9YA8GORIH3NWQZB1";
-                                                }
-                                            }
+//                                            ConnectivityManager manager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+//                                            if(manager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).isConnected()){
+//                                                thingspeakKey = "1CC7UK5QBF1MAN40";
+//                                                System.out.println("Wi-Fi");
+//                                            }else if(manager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).isConnected()){
+//                                                TelephonyManager telephonyManager = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
+//                                                String carrierName = telephonyManager.getNetworkOperatorName();
+//                                                System.out.println(carrierName);
+//                                                if(carrierName.equals("AIS")){
+//                                                    thingspeakKey = "13TDUBSYN2YOWH8T";
+//                                                }else if(carrierName.equals("dtac")){
+//                                                    thingspeakKey = "NB52MGLUQW2AZ33Q";
+//                                                }else if(carrierName.equals("TRUE 3G+")){
+//                                                    thingspeakKey = "9YA8GORIH3NWQZB1";
+//                                                }
+//                                            }
                                             //new RequestTask().execute("https://api.thingspeak.com/update?api_key="+thingspeakKey+"&field1="+min+"&field2="+avg+ "&field3="+max+"&field4="+rss);
 
                                             //// TODO: 11/5/2016 send data
@@ -341,7 +354,7 @@ public class MainActivity extends AppCompatActivity {
 
                                                     DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy_HH-mm-ss");
                                                     Date date = new Date();
-                                                    String filname = dateFormat.format(date) + ".csv";
+                                                    String filname = dateFormat.format(date) + ".txt";
                                                     File d = new File(getBaseContext().getFilesDir().getPath());
                                                     File f = new File(d, "test.csv");
                                                     File t = new File(d, filname);
@@ -624,5 +637,35 @@ public class MainActivity extends AppCompatActivity {
             LTEsignalStrength = signalStrengthValue;
         }
     }
-
+    
+    private void createFile(){
+        File externalD = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath());
+        if (!externalD.exists()) {
+//            System.out.println("Created Folder");
+            File dir = new File(Environment.getExternalStorageDirectory() + "/Download/");
+            dir.mkdirs();
+            file = new File(externalD, "RTT.txt");
+            try {
+                file.createNewFile();
+                fileoutputStream = new FileOutputStream(file,false);
+                fileoutputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }else{
+//            System.out.println("Already have folder: " + Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath());
+            if(!new File(externalD + "RTT.txt").exists()){
+//                System.out.println("Created File");
+                file = new File(externalD, "RTT.txt");
+                try {
+                    file.createNewFile();
+                    fileoutputStream = new FileOutputStream(file,false);
+                    fileoutputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+//                System.out.println(file.exists());
+            }
+        }
+    }
 }

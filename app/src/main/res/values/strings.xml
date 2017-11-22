@@ -2,5 +2,6 @@
     <string name="app_name">RTTtest</string>
     <string name="googleIP">61.91.160.93</string>
     <string name="nbtc">202.29.148.77</string>
+    <string name="nbtc_text">nbtc.ee.psu.ac.th</string>
     <string name="nbtc_local">172.31.16.5</string>
 </resources>
